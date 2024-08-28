@@ -4,6 +4,6 @@
  * For eg in context
  **/
 
-const formatDate = () =>{
+const formatDate = ():string =>{
     return ''
 }
