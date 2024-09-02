@@ -2,15 +2,20 @@ export class myFetch {
     private baseUrl: string;
 
     constructor() {
-        this.baseUrl =  import.meta.env.VITE_BASE_URL || '';
+        this.baseUrl = import.meta.env.VITE_BASE_URL || '';
         if (!this.baseUrl) {
             throw new Error('Base URL is not defined in the environment variables.');
         }
     }
 
-    async get<T>(endpoint: string): Promise<T> {
+    async get<T>(endpoint: string, headers?: HeadersInit): Promise<T> {
         try {
-            const response = await fetch(`${this.baseUrl}${endpoint}`);
+            const response = await fetch(`${this.baseUrl}${endpoint}`, {
+                method: 'GET',
+                headers: {
+                    ...headers,
+                },
+            });
             return this.handleResponse<T>(response);
         } catch (error) {
             console.error('Fetch GET error:', error);
@@ -18,12 +23,13 @@ export class myFetch {
         }
     }
 
-    async post<T>(endpoint: string, data: any): Promise<T> {
+    async post<T>(endpoint: string, data: any, headers?: HeadersInit): Promise<T> {
         try {
             const response = await fetch(`${this.baseUrl}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...headers,
                 },
                 body: JSON.stringify(data),
             });
@@ -46,12 +52,12 @@ export class myFetch {
 // Example usage:
 // const api = new myFetch();
 
-// // GET request
-// api.get('/posts')
+// // GET request with custom headers
+// api.get('/posts', { Authorization: 'Bearer your_token_here' })
 //     .then(data => console.log(data))
 //     .catch(error => console.error('Error fetching posts:', error));
 
-// // POST request
-// api.post('/posts', { title: 'New Post', body: 'This is a new post.' })
+// // POST request with custom headers
+// api.post('/posts', { title: 'New Post', body: 'This is a new post.' }, { Authorization: 'Bearer your_token_here' })
 //     .then(data => console.log('Post created:', data))
 //     .catch(error => console.error('Error creating post:', error));

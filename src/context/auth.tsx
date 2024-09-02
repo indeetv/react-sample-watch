@@ -1,47 +1,32 @@
-// src/AuthContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useState, createContext } from "react";
+import {
+  LoginContextType,
+  LoginProviderProps,
+} from "../interfaces/auth";
+import { myFetch } from "../lib/myFetch";
+import { getClientID } from "../utils/api";
 
-interface User {
-    username: string;
-}
+const LoginContext = createContext<LoginContextType>({});
 
-interface AuthContextType {
-    user: User | null;
-    login: (userData: User) => void;
-    logout: () => void;
-}
+const LoginProvider: React.FC<LoginProviderProps> = ({ children }) => {
+  const api = new myFetch();
+  const clientID = getClientID();
+  const apiKey = import.meta.env.VITE_API_KEY;
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+  const login = async (authType,payload): Promise<void> => {
+    api.post('auth/login?device=browser', {type:', body: 'This is a new post.' }, { Authorization: `Bearer ${apiKey}`})
+    // const {auth_type,singup_allowed,key} = await api.get("meta/product-config?device=browser", { Authorization: `Bearer ${apiKey}`,ClientID: clientID}) as ProductConfigType;
+    // setAuthType(auth_type);
+    // setKey(key);
+    // setSignupAllowed(singup_allowed);
+    // console.error("Error fetching product config:", error);
+  };
 
-export const useAuth = (): AuthContextType => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+  return (
+    <LoginContext.Provider value={{ login }}>{children}</LoginContext.Provider>
+  );
 };
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+export default LoginProvider;
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-    }, []);
-
-    const login = (userData: User) => {
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-    };
-
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('user');
-    };
-
-    const value = { user, login, logout };
-
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+export { LoginContext };
