@@ -1,16 +1,35 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Login from '../pages/Login';
+import React, { useContext, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import Login from "../pages/Login";
+import Brands from "../pages/Brands";
+import { LoginContext } from "../store/auth";
+import { ProductContext } from "../store/Product";
+import Projects from "../pages/Projects";
 
 const AppRouter: React.FC = () => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Navigate to="/login" replace />} />
-                <Route path="/login" element={<Login />} />
-            </Routes>
-        </Router>
-    );
-}
+  const { getMetaConfig } = useContext(ProductContext);
+  const { checkForLoginAndUpdate } = useContext(LoginContext);
+
+  useEffect(() => {
+    checkForLoginAndUpdate();
+    getMetaConfig();
+  }, []);
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/brands" element={<Brands />} />
+        <Route path="/projects" element={<Projects />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default AppRouter;

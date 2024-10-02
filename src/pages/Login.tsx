@@ -1,19 +1,38 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useLayoutEffect } from "react";
 import LoginLayout from "../components/Login/Login";
-import { ProductContext } from "../context/Product";
+import { LoginContext } from "../store/auth";
+import { ProductContext } from "../store/Product";
+import { LoginFormData } from "../types/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-    const { getProductConfig, authType } = useContext(ProductContext);
+  const navigate = useNavigate();
+  const { getProductConfig, authType } = useContext(ProductContext);
+  const { login, userLoggedIn } = useContext(LoginContext);
 
-    const handleFormSubmit = (payload: { email: string; authKey: string }) => {
-        console.log('Form submitted with payload:', payload);
-    };
+  const handleFormSubmit = (payload: LoginFormData) => {
+    const type = authType === "PWD" ? "password" : authType.toLowerCase();
+    let credentials: { pin?: string; username?: string; password?: string } = {};
 
-    useEffect(() => {
-        getProductConfig();
-    }, []);
+    if (authType === "PIN") {
+      const pin = String(payload.authKey);
+      credentials = { pin };
+    } else if (authType === "PWD") {
+      const { username, authKey } = payload;
+      const password = String(authKey);
+      credentials = { username, password };
+    }
 
-    return (
-        <LoginLayout authType={authType} onSubmit={handleFormSubmit} />
-    );
+    login(type, credentials);
+  };
+
+  useLayoutEffect(() => {
+    getProductConfig();
+  }, []);
+
+  useEffect(() => {
+    if (userLoggedIn) navigate("/brands");
+  }, [userLoggedIn]);
+
+  return <LoginLayout authType={authType} onSubmit={handleFormSubmit} />;
 }

@@ -13,3 +13,7 @@ export function getClientID(): string {
     const clientID = `${platform}-${browser}-${version}-${osVersion}`;
     return clientID;
 }
+
+export const okStatus = 'W0000'
+
+

@@ -1,32 +1,30 @@
 import React, { useState, useCallback } from "react";
-import { LoginLayoutProps } from "../../interfaces/auth";
+import { LoginLayoutProps, LoginFormData } from "../../types/auth";
 
 const LoginLayout: React.FC<LoginLayoutProps> = ({ authType, onSubmit }) => {
-  const [loginFormData, setLoginFormData] = useState<{
-    email: string;
-    authKey: string;
-  }>({
-    email: "",
+  const [loginFormData, setLoginFormData] = useState<LoginFormData>({
+    username: "",
     authKey: "",
   });
 
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setLoginFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }, []);
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setLoginFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    },
+    []
+  );
 
   const handleSubmit = useCallback(
     (event: React.FormEvent) => {
-      event.preventDefault(); 
+      event.preventDefault();
       onSubmit(loginFormData);
     },
     [loginFormData, onSubmit]
   );
-
-  console.log("checking", loginFormData);
 
   return (
     <>
@@ -38,12 +36,10 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({ authType, onSubmit }) => {
             className="mx-auto h-10 w-auto"
           />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            {authType === "Admin" ? "Admin Login" : "Sign in to your account"}
+            Sign in to your account
           </h2>
           <p className="text-center text-sm text-gray-500">
-            {authType === "Admin"
-              ? "Access the admin panel"
-              : "Please enter your credentials"}
+            Please enter your credentials
           </p>
         </div>
 
@@ -52,7 +48,7 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({ authType, onSubmit }) => {
             action="#"
             method="POST"
             className="space-y-6"
-            onSubmit={handleSubmit} // Use the modified handleSubmit
+            onSubmit={handleSubmit}
           >
             {authType !== "PIN" && (
               <div>
@@ -64,11 +60,11 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({ authType, onSubmit }) => {
                 </label>
                 <div className="mt-2">
                   <input
-                    id="email"
-                    name="email"
+                    id="username"
+                    name="username"
                     type="email"
                     required
-                    value={loginFormData.email}
+                    value={loginFormData.username}
                     onChange={handleChange}
                     autoComplete="email"
                     className="px-2.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"

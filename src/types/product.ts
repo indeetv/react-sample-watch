@@ -4,6 +4,7 @@ export interface ProductContextType {
     authType: string;
     key: string;
     signupAllowed: boolean;
+    getMetaConfig: ()=> Promise<void>;
     getProductConfig: () => Promise<void>;
 }
 
