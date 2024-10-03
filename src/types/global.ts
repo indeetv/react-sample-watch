@@ -11,11 +11,12 @@ export interface ContentTableProps<T extends object> {
 export interface Project {
   name: string;
   poster?: string;
+  key: string;
 }
 
 export interface AppLayoutProps {
-    children: React.ReactNode;
-    tableData: any; 
-    pageToRedirect?: string; 
-    queryNameToAdd?: string; 
+  children: React.ReactNode;
+  tableData: any;
+  pageToRedirect?: string;
+  queryNameToAdd?: string;
 }

@@ -1,8 +1,12 @@
 import React, { useState, createContext, useEffect } from "react";
 import {
   LoginFormData,
+  LoginApiResponce,
   LoginContextType,
+  LoginRequest,
   LoginProviderProps,
+  LogoutRequest,
+  LogoutResponse,
 } from "../types/auth";
 import { setCookie, getCookie, removeCookie } from "../utils/auth";
 import { okStatus } from "../utils/api";
@@ -11,7 +15,7 @@ import { myFetch } from "../lib/myFetch";
 const LoginContext = createContext<LoginContextType>({
   login: async () => {},
   checkForLoginAndUpdate: () => {},
-  logout:()=>{},
+  logout: () => {},
   userLoggedIn: null,
 });
 
@@ -23,7 +27,11 @@ const LoginProvider: React.FC<LoginProviderProps> = ({ children }) => {
     authType: string,
     credentials: LoginFormData
   ): Promise<void> => {
-    const { status_code: _statusCode, token,refresh_token:rfToken } = await api.post("auth/login", {
+    const {
+      status_code: _statusCode,
+      token,
+      refresh_token: rfToken,
+    } = await api.post<LoginApiResponce, LoginRequest>("auth/login", {
       type: authType,
       credentials: credentials,
       persist: false,
@@ -31,7 +39,7 @@ const LoginProvider: React.FC<LoginProviderProps> = ({ children }) => {
 
     if (_statusCode === okStatus) {
       setCookie("token", token, 2);
-      setCookie("rfToken",rfToken,2)
+      setCookie("rfToken", rfToken, 2);
       setUserLoggedIn(true);
     }
   };
@@ -44,21 +52,24 @@ const LoginProvider: React.FC<LoginProviderProps> = ({ children }) => {
 
   const logout = async (): Promise<void> => {
     const jwtToken = getCookie("token");
-    const rfToken = getCookie("rfToken")
-    const { status_code } = await api.post("auth/logout", {
-      token: jwtToken,
-      refresh_token:rfToken
-    });
+    const rfToken = getCookie("rfToken");
+    const { status_code } = await api.post<LogoutResponse, LogoutRequest>(
+      "auth/logout",
+      {
+        token: jwtToken,
+        refresh_token: rfToken,
+      }
+    );
     if (status_code === okStatus) {
       removeCookie("token");
-      removeCookie("rfToken")
+      removeCookie("rfToken");
     }
-    window.location.reload()
+    window.location.reload();
   };
 
   return (
     <LoginContext.Provider
-      value={{ login, userLoggedIn, checkForLoginAndUpdate,logout }}
+      value={{ login, userLoggedIn, checkForLoginAndUpdate, logout }}
     >
       {children}
     </LoginContext.Provider>

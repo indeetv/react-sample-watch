@@ -2,6 +2,7 @@ import React, { useEffect, useContext } from "react";
 import { BrandsContext } from "../store/Brands";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import { Brand } from "../types/brands";
 
 export default function Brands() {
   const navigate = useNavigate();
@@ -16,8 +17,8 @@ export default function Brands() {
   }, [brands, totalBrands]);
 
   const redirectToProjectPage = (): void => {
-    if (totalBrands === 1 && brands && brands[0]?.keyword === "allprojects") {
-      const brandKey = brands[0].key;
+    if (totalBrands === 1 && brands && (brands as Brand[])[0]?.keyword === "allprojects") {
+      const brandKey = (brands as Brand[])[0].key;
       navigate(`/projects?brand=${brandKey}`);
     }
   };
