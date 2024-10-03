@@ -1,3 +1,21 @@
-export interface ApiResponse{
-    response:Response;
+export interface ApiResponse {
+  response: Response;
+}
+
+export interface ContentTableProps<T extends object> {
+  tableData?: Array<T>;
+  pageToRedirect?: string;
+  queryNameToAdd?: string;
+}
+
+export interface Project {
+  name: string;
+  poster?: string;
+}
+
+export interface AppLayoutProps {
+    children: React.ReactNode;
+    tableData: any; 
+    pageToRedirect?: string; 
+    queryNameToAdd?: string; 
 }

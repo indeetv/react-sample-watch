@@ -1,18 +1,31 @@
 import React from "react";
 import Navbar from "./Navbar";
 import ContentTable from "./ContentTable";
+import {AppLayoutProps} from "../types/global"
 
-export default function AppLayout({ children, tableData }) {
+
+const AppLayout: React.FC<AppLayoutProps> = ({
+  children,
+  tableData,
+  pageToRedirect,
+  queryNameToAdd,
+}) => {
   return (
     <>
       <header className="w-full">
-        <Navbar></Navbar>
+        <Navbar />
       </header>
       <main className="w-[80%] m-auto mt-3">
         {children}
-        <ContentTable tableData={tableData}></ContentTable>
+        <ContentTable
+          tableData={tableData}
+          pageToRedirect={pageToRedirect}
+          queryNameToAdd={queryNameToAdd}
+        />
       </main>
       <footer></footer>
     </>
   );
-}
+};
+
+export default AppLayout;

@@ -18,12 +18,12 @@ export default function Brands() {
   const redirectToProjectPage = (): void => {
     if (totalBrands === 1 && brands && brands[0]?.keyword === "allprojects") {
       const brandKey = brands[0].key;
-      navigate(`/projects?key=${brandKey}`);
+      navigate(`/projects?brand=${brandKey}`);
     }
   };
   return (
     <>
-      <AppLayout tableData={brands}>
+      <AppLayout tableData={brands} pageToRedirect='projects' queryNameToAdd='brand'>
         Select the brand whose content you want to see.
       </AppLayout>
     </>

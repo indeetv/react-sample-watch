@@ -23,7 +23,7 @@ export class myFetch {
   async get<T>(endpoint: string, headers?: HeadersInit): Promise<T> {
     try {
       const response = await fetch(
-        `${this.baseUrl}${endpoint}?device=browser`,
+        `${this.baseUrl}${endpoint}`,
         {
           method: "GET",
           headers: {
@@ -47,7 +47,7 @@ export class myFetch {
   ): Promise<T> {
     try {
       const response = await fetch(
-        `${this.baseUrl}${endpoint}?device=browser`,
+        `${this.baseUrl}${endpoint}`,
         {
           method: "POST",
           headers: {

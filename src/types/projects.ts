@@ -1,21 +1,71 @@
-interface Project {
+export interface Project {
   key: string;
   name: string;
   poster: string;
 }
 
-interface ProjectsResponse {
+export interface ProjectsResponse {
   count: number;
   previous: string | null;
   next: string | null;
   results: Project[];
 }
 
-interface ProjectsContextType {
+export interface ProjectsContextType {
+  selectedPrjVideos: any;
   projects: Project[] | null;
-  fetchProjects: () => void;
+  fetchProjects: (brandKey: string) => void;
+  fetchProjectsVideos: (projKey: string) => void;
+  playback: (projKey: string) => void;
 }
 
-interface ProjectsProviderProps {
+export interface ProjectsProviderProps {
   children: React.ReactNode;
+}
+
+interface ScreeningDetails {
+  screener_key: string;
+  expired: boolean;
+  max_views: number;
+  views_consumed: number;
+  start_date: number;
+  expiry_date: number;
+  offline: boolean;
+}
+
+export interface Video {
+    key: string;
+    name: string;
+    poster: string;
+    duration_in_sec: number;
+    offline_download_size: number;
+    cast_and_crew: any[]; // You can specify a more detailed type if needed
+    description: string;
+    subtitles: any[]; // You can specify a more detailed type if needed
+    hdr_standard: string | null;
+    is_cmaf_enabled: boolean;
+    season: string | null;
+    episode: string | null;
+    original_air_date: string | null;
+    screening_details: {
+        screener_key: string;
+        expired: boolean;
+        max_views: number;
+        views_consumed: number;
+        start_date: number; // epoch time
+        expiry_date: number; // epoch time
+        offline: boolean;
+    };
+    auth_details: any; // You can specify a more detailed type if needed
+    overlay_watermark_details: any; // You can specify a more detailed type if needed
+    resume_playback: any; // You can specify a more detailed type if needed
+}
+
+
+export interface VideosResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Video[];
+  status_code: string;
 }

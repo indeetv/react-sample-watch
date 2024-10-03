@@ -16,7 +16,7 @@ export function getCookie(name: string): string | null {
     const token = parts.pop()?.split(";").shift() || null;
 
     if (token && _isTokenExpired(token)) {
-      _removeCookie(name);
+      removeCookie(name);
       return null;
     }
 
@@ -31,6 +31,6 @@ function _isTokenExpired(token: string): boolean {
   return payload.exp < currentTime;
 }
 
-function _removeCookie(name: string): void {
+export function removeCookie(name: string): void {
   document.cookie = `${name}=; Max-Age=0; path=/`;
 }

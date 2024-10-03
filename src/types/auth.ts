@@ -15,6 +15,7 @@ export interface LoginContextType {
   userLoggedIn: boolean | null;
   checkForLoginAndUpdate: () => void;
   login: (authType: string, credentials: LoginFormData) => Promise<void>;
+  logout:()=>void
 }
 
 export interface LoginProviderProps {

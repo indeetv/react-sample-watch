@@ -1,12 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { ContentTableProps, Project } from "../types/global";
 
-interface ContentTableProps<T extends object> {
-  tableData?: Array<T>; // Make tableData optional and constrain T to object
-}
-
-const ContentTable = <T extends object>({ tableData = [] }: ContentTableProps<T>) => {
+const ContentTable = <T extends Project>({
+  tableData = [],
+  pageToRedirect,
+  queryNameToAdd,
+}: ContentTableProps<T>) => {
+  const navigate = useNavigate();
 
   const headers = tableData?.length > 0 ? Object.keys(tableData[0]) : [];
+
+  const handleNameClick = (name: string) => {
+    navigate(
+      `/${pageToRedirect}?${queryNameToAdd}=${encodeURIComponent(name)}`
+    );
+  };
 
   return (
     <>
@@ -23,9 +32,24 @@ const ContentTable = <T extends object>({ tableData = [] }: ContentTableProps<T>
         <tbody>
           {tableData?.map((item, index) => (
             <tr key={index}>
-              {headers.map((header) => (
+              {headers?.map((header) => (
                 <td key={header} className="border border-gray-300 p-2">
-                  {item[header]}
+                  {header === "poster" ? (
+                    <img
+                      src={item[header]}
+                      alt="Poster"
+                      className="w-16 h-24 object-cover"
+                    />
+                  ) : header === "name" ? (
+                    <button
+                      onClick={() => handleNameClick(item.key)}
+                      className="text-blue-500 underline"
+                    >
+                      {item[header]}
+                    </button>
+                  ) : (
+                    item[header]
+                  )}
                 </td>
               ))}
             </tr>
