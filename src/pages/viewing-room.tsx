@@ -97,7 +97,6 @@ export default function ViewingRoom() {
         dataToEnablePlayback.apiUrl = `${baseUrl}stream/${screenerKey}/playback`;
         dataToEnablePlayback.embeddablePlayerInitializationUrl = endpoints["watch.stream.player_function.retrieve"]
         dataToEnablePlayback.embeddablePlayerTemplateURL = endpoints["watch.stream.player_component.retrieve"]
-        debugger
         await loadScript(
           dataToEnablePlayback.embeddablePlayerInitializationUrl
         );
