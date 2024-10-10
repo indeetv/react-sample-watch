@@ -20,19 +20,21 @@ export class myFetch {
     }
   }
 
-  async get<T>(endpoint: string, headers?: HeadersInit): Promise<T> {
+  async get<T>(
+    endpoint: string,
+    headers?: HeadersInit | null,
+    isFullUrl: boolean = false
+  ): Promise<T> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}${endpoint}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${this.token}`,
-            clientID: this.clientID,
-            ...headers,
-          },
-        }
-      );
+      const url = isFullUrl ? endpoint : `${this.baseUrl}${endpoint}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          clientID: this.clientID,
+          ...headers,
+        },
+      });
       return this.handleResponse<T>(response);
     } catch (error) {
       console.error("Fetch GET error:", error);
@@ -40,25 +42,24 @@ export class myFetch {
     }
   }
 
-  async post<T, D>(
+  async post<T, TData>(
     endpoint: string,
-    data: D,
-    headers?: HeadersInit
+    data: TData,
+    headers?: HeadersInit,
+    isFullUrl: boolean = false
   ): Promise<T> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}${endpoint}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.token}`,
-            clientID: this.clientID,
-            ...headers,
-          },
-          body: JSON.stringify(data),
-        }
-      );
+      const url = isFullUrl ? endpoint : `${this.baseUrl}${endpoint}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+          clientID: this.clientID,
+          ...headers,
+        },
+        body: JSON.stringify(data),
+      });
       return this.handleResponse<T>(response);
     } catch (error) {
       console.error("Fetch POST error:", error);
@@ -66,18 +67,22 @@ export class myFetch {
     }
   }
 
-  private async handleResponse<T>(response: Response): Promise<T> {
+  private async handleResponse<T>(response: Response): Promise<T | string> {
+    const responseBody = await response.text();
+    const contentType = response.headers.get("Content-Type");
+    const isHtml = contentType && contentType.includes("text/html");
     if (response.status === 401) {
       window.location.href = "/login";
       throw new Error("Unauthorized access - redirecting to login.");
     }
-
     if (!response.ok) {
-      const errorMessage = await response.text();
       throw new Error(
-        `HTTP error! status: ${response.status}, message: ${errorMessage}`
+        `HTTP error! status: ${response.status}, message: ${responseBody}`
       );
     }
-    return response.json() as Promise<T>;
+    if (isHtml) {
+      return responseBody;
+    }
+    return JSON.parse(responseBody) as T;
   }
 }

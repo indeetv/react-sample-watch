@@ -34,11 +34,11 @@ const ContentTable = <T extends Project>({
             <tr key={index}>
               {headers?.map((header) => (
                 <td key={header} className="border border-gray-300 p-2">
-                  {header === "poster" ? (
+                  {header === "poster" || header === "logo"  || header==="header" ? (
                     <img
                       src={item[header]}
                       alt="Poster"
-                      className="w-16 h-24 object-cover"
+                      className="w-16 object-cover"
                     />
                   ) : header === "name" ? (
                     <button

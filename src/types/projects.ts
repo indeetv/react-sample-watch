@@ -34,33 +34,32 @@ interface ScreeningDetails {
 }
 
 export interface Video {
-    key: string;
-    name: string;
-    poster: string;
-    duration_in_sec: number;
-    offline_download_size: number;
-    cast_and_crew: any[]; 
-    description: string;
-    subtitles: any[]; 
-    hdr_standard: string | null;
-    is_cmaf_enabled: boolean;
-    season: string | null;
-    episode: string | null;
-    original_air_date: string | null;
-    screening_details: {
-        screener_key: string;
-        expired: boolean;
-        max_views: number;
-        views_consumed: number;
-        start_date: number;
-        expiry_date: number; 
-        offline: boolean;
-    };
-    auth_details: any; 
-    overlay_watermark_details: any; 
-    resume_playback: any; 
+  key: string;
+  name: string;
+  poster: string;
+  duration_in_sec: number;
+  offline_download_size: number;
+  cast_and_crew: any[];
+  description: string;
+  subtitles: any[];
+  hdr_standard: string | null;
+  is_cmaf_enabled: boolean;
+  season: string | null;
+  episode: string | null;
+  original_air_date: string | null;
+  screening_details: {
+    screener_key: string;
+    expired: boolean;
+    max_views: number;
+    views_consumed: number;
+    start_date: number;
+    expiry_date: number;
+    offline: boolean;
+  };
+  auth_details: any;
+  overlay_watermark_details: any;
+  resume_playback: any;
 }
-
 
 export interface VideosResponse {
   count: number;
@@ -68,4 +67,10 @@ export interface VideosResponse {
   previous: string | null;
   results: Video[];
   status_code: string;
+}
+
+export interface VideoItem {
+  name: string;
+  poster: string;
+  screening_details: ScreeningDetails;
 }
