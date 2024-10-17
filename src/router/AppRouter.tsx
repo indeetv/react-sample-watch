@@ -14,11 +14,12 @@ import { ProductContext } from "../store/Product";
 import Projects from "../pages/Projects";
 
 const AppRouter: React.FC = () => {
-  const { getMetaConfig } = useContext(ProductContext);
+  const { getMetaConfig,getProductConfig } = useContext(ProductContext);
   const { checkForLoginAndUpdate } = useContext(LoginContext);
 
   useEffect(() => {
     checkForLoginAndUpdate();
+    getProductConfig();
     getMetaConfig();
   }, []);
 

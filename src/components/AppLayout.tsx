@@ -1,29 +1,56 @@
-import React from "react";
+import React, { useContext } from "react";
 import Navbar from "./Navbar";
 import ContentTable from "./ContentTable";
-import {AppLayoutProps} from "../types/global"
+import { AppLayoutProps } from "../types/global";
+import LoadingSpinner from "../components/Loader";
+import { GlobalContext } from "../store/global";
 
+interface AppLayoutPropsWithEmit extends AppLayoutProps {
+  onButtonClick: (key: string | null, videoKey?: string) => void | undefined;
+  footerText?: string | null;
+  onShowMoreClicked?: () => void;
+}
 
-const AppLayout: React.FC<AppLayoutProps> = ({
+const AppLayout: React.FC<AppLayoutPropsWithEmit> = ({
   children,
+  footerText,
   tableData,
   pageToRedirect,
   queryNameToAdd,
+  onButtonClick,
+  onShowMoreClicked,
 }) => {
+  const { isLoading } = useContext(GlobalContext);
   return (
     <>
-      <header className="w-full">
-        <Navbar />
-      </header>
-      <main className="w-[80%] m-auto mt-3">
-        {children}
-        <ContentTable
-          tableData={tableData}
-          pageToRedirect={pageToRedirect}
-          queryNameToAdd={queryNameToAdd}
-        />
-      </main>
-      <footer></footer>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          <header className="w-full">
+            <Navbar />
+          </header>
+          <main className="w-[80%] m-auto mt-3">
+
+            <span className="p-4 font-bold text-lg text-center text-slate-600 inline-block w-full">
+              {children}
+            </span>
+            <ContentTable
+              tableData={tableData}
+              pageToRedirect={pageToRedirect}
+              queryNameToAdd={queryNameToAdd}
+              onButtonClick={onButtonClick}
+            />
+          </main>
+          <footer className="flex justify-center">
+            {footerText && (
+              <button onClick={onShowMoreClicked} className="text-blue-500 text-center p-5 underline underline-offset-2 cursor-pointer">
+                {footerText}
+              </button>
+            )}
+          </footer>
+        </>
+      )}
     </>
   );
 };

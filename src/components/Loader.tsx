@@ -1,0 +1,100 @@
+import React from 'react';
+
+const LoadingSpinner: React.FC = () => {
+  return (
+    <div className="w-screen h-screen bg-slate-100 flex flex-col justify-center items-center gap-4">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+      >
+        <rect
+          width="10"
+          height="10"
+          x="1"
+          y="1"
+          className="fill-indigo-600"
+          rx="1"
+        >
+          <animate
+            id="svgSpinnersBlocksShuffle20"
+            fill="freeze"
+            attributeName="x"
+            begin="0;svgSpinnersBlocksShuffle27.end"
+            dur="0.2s"
+            values="1;13"
+          />
+          <animate
+            id="svgSpinnersBlocksShuffle21"
+            fill="freeze"
+            attributeName="y"
+            begin="svgSpinnersBlocksShuffle24.end"
+            dur="0.2s"
+            values="1;13"
+          />
+          <animate
+            id="svgSpinnersBlocksShuffle22"
+            fill="freeze"
+            attributeName="x"
+            begin="svgSpinnersBlocksShuffle25.end"
+            dur="0.2s"
+            values="13;1"
+          />
+          <animate
+            id="svgSpinnersBlocksShuffle23"
+            fill="freeze"
+            attributeName="y"
+            begin="svgSpinnersBlocksShuffle26.end"
+            dur="0.2s"
+            values="13;1"
+          />
+        </rect>
+        <rect
+          width="10"
+          height="10"
+          x="1"
+          y="13"
+          className="fill-indigo-600"
+          rx="1"
+        >
+          <animate
+            id="svgSpinnersBlocksShuffle24"
+            fill="freeze"
+            attributeName="y"
+            begin="svgSpinnersBlocksShuffle20.end"
+            dur="0.2s"
+            values="13;1"
+          />
+          <animate
+            id="svgSpinnersBlocksShuffle25"
+            fill="freeze"
+            attributeName="x"
+            begin="svgSpinnersBlocksShuffle21.end"
+            dur="0.2s"
+            values="1;13"
+          />
+          <animate
+            id="svgSpinnersBlocksShuffle26"
+            fill="freeze"
+            attributeName="y"
+            begin="svgSpinnersBlocksShuffle22.end"
+            dur="0.2s"
+            values="1;13"
+          />
+          <animate
+            id="svgSpinnersBlocksShuffle27"
+            fill="freeze"
+            attributeName="x"
+            begin="svgSpinnersBlocksShuffle23.end"
+            dur="0.2s"
+            values="13;1"
+          />
+        </rect>
+      </svg>
+      <p className="text-xl font-semibold text-indigo-700">Loading</p>
+    </div>
+  );
+};
+
+export default LoadingSpinner;

@@ -12,11 +12,14 @@ export interface ProjectsResponse {
 }
 
 export interface ProjectsContextType {
-  selectedPrjVideos: any;
   projects: Project[] | null;
-  fetchProjects: (brandKey: string) => void;
-  fetchProjectsVideos: (projKey: string) => void;
-  playback: (projKey: string) => void;
+  selectedPrjVideos: Video[] | null;
+  fetchProjects: (brandKey: string, nextUrl?: string) => Promise<void>;
+  fetchProjectsVideos: (prjKey: string,nextVideosUrl?:string) => Promise<void>;
+  getVideoDetails: (prjKey: string, videoKey: string) => Promise<string>;
+  playback: (screenerKey: string) => Promise<void>;
+  nextPrjUrl: string | null;
+  nextVidoesUrl: string | null;
 }
 
 export interface ProjectsProviderProps {
@@ -70,7 +73,30 @@ export interface VideosResponse {
 }
 
 export interface VideoItem {
+  key: any;
   name: string;
   poster: string;
   screening_details: ScreeningDetails;
+}
+
+export interface VideoDetails {
+  key: string;
+  name: string;
+  poster: string;
+  duration_in_sec: number;
+  description: string;
+  screening_details: {
+    screener_key: string;
+    max_views: number;
+    views_consumed: number;
+    start_date: number;
+    expiry_date: number;
+  };
+}
+
+export interface ApiResponse<T> {
+  screening_details: any;
+  status: string;
+  message?: string;
+  data: T;
 }

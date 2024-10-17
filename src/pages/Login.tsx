@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { getProductConfig, authType } = useContext(ProductContext);
+  const { authType } = useContext(ProductContext);
   const { login, userLoggedIn } = useContext(LoginContext);
 
   const handleFormSubmit = (payload: LoginFormData) => {
@@ -25,10 +25,6 @@ export default function Login() {
 
     login(type, credentials);
   };
-
-  useLayoutEffect(() => {
-    getProductConfig();
-  }, []);
 
   useEffect(() => {
     if (userLoggedIn) navigate("/brands");

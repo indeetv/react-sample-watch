@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ProjectsContext } from "../store/Projects";
 import { endpoints } from "../utils/metaConfig";
 import { getCookie } from "../utils/auth";
 import { PlaybackData } from "../types/playback";
 import { myFetch } from "../lib/myFetch";
+import { GlobalContext } from "../store/global";
 
 export default function ViewingRoom() {
   const api = new myFetch();
+  const {setLoadingState} = useContext(GlobalContext)
   const [searchParams] = useSearchParams();
-  const { playback } = useContext(ProjectsContext);
   const [screenerKey, setScreenerKey] = useState<string>();
   const [dataToEnablePlayback, setDataToEnablePlayback] = useState({
     apiUrl: "",
@@ -68,7 +68,7 @@ export default function ViewingRoom() {
       },
       false
     );
-    const playbackData = response;
+    const playbackData = response as PlaybackData;
     await getEmbeddablePlayer(playbackData);
   };
 

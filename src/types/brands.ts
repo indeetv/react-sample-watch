@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 
 export interface BrandsContextType {
-  getBrands: () => void;
-  brands: [] | null;
+  getBrands: (url?:string) => void;
+  brands: Brand[] | null;
   totalBrands: number;
+  nextUrl: string | null;
 }
 
 export interface BrandsProviderProps {
@@ -11,6 +12,7 @@ export interface BrandsProviderProps {
 }
 
 export interface Brand {
+  id: any;
   key: string;
   keyword: string;
   name: string;

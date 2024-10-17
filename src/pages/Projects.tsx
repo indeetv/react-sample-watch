@@ -4,13 +4,27 @@ import { ProjectsContext } from "../store/Projects";
 import AppLayout from "../components/AppLayout";
 
 export default function Projects() {
-    const { fetchProjects, projects } = useContext(ProjectsContext);
-    const [searchParams] = useSearchParams();
+  const { fetchProjects, projects, nextPrjUrl } = useContext(ProjectsContext);
+  const [searchParams] = useSearchParams();
+  const handleButtonClick = () => {};
+  const brand = searchParams.get("brand") as string;
 
   useEffect(() => {
-    const brand = searchParams.get("brand") as string;
     fetchProjects(brand);
   }, []);
 
-  return <AppLayout tableData={projects} pageToRedirect='videos' queryNameToAdd='project'>Select Project</AppLayout>;
+  const handleShowMoreClicked = () => fetchProjects(brand,nextPrjUrl as string);
+
+  return (
+    <AppLayout
+      tableData={projects}
+      pageToRedirect="videos"
+      queryNameToAdd="project"
+      onButtonClick={handleButtonClick}
+      footerText={nextPrjUrl && "Load More Projects..."}
+      onShowMoreClicked={handleShowMoreClicked}
+    >
+      Select Project
+    </AppLayout>
+  );
 }
