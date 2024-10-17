@@ -1,20 +1,27 @@
 import React, { useContext } from "react";
 import { ProductContext } from "../store/Product";
 import { LoginContext } from "../store/auth";
+import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = ({}) => {
   const {logoImg} = useContext(ProductContext)
   const { logout } = useContext(LoginContext);
+  const navigate = useNavigate()
+  const navigateToBrandsPage = () => navigate("/brands")
+  
   return (
     <>
       <nav className="bg-white">
-        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <div className="flex flex-wrap items-center justify-between p-4">
+          <button className="flex justify-between" onClick={navigateToBrandsPage}>
             <img
-              src={logoImg}
+              src="https://indee.tv/wp-content/themes/indee/images/favicons/favicon_192x192.png"
               className="h-8"
-              alt="enterprise logo"
+              alt="indee logo"
             />
+            <span className="self-center select-none text-xl font-semibold whitespace-nowrap ml-4">Indee React Demo App</span>
+          </button>
           <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
             <button
               type="button"

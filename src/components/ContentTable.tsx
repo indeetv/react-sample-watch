@@ -57,6 +57,7 @@ const ContentTable = <T extends Project>({
               key={index}
               className={`odd:bg-white even:bg-gray-50 h-16 border-b cursor-pointer hover:bg-gray-200`}
               // onClick={test}
+              onClick={() => handleNameClick(item.key, item)}
             >
               {headers?.map((header) => (
                 <td
@@ -72,6 +73,7 @@ const ContentTable = <T extends Project>({
                       <img
                         src={item[header]}
                         alt="Poster"
+                        loading="lazy"
                         className="w-16 object-cover rounded-md mx-auto"
                       />
                     ) : (
@@ -81,7 +83,7 @@ const ContentTable = <T extends Project>({
                     )
                   ) : header === "name" ? (
                     <button
-                      onClick={() => handleNameClick(item.key, item)}
+                      // onClick={() => handleNameClick(item.key, item)}
                       title={item[header]}
                       className="text-blue-500 underline truncate max-w-80"
                     >

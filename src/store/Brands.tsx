@@ -42,7 +42,9 @@ const BrandsProvider: React.FC<BrandsProviderProps> = ({ children }) => {
       setBrands((prevBrands) =>
         prevBrands ? [...prevBrands, ...results] : results
       );
-    } else setBrands(results)
+    } else {
+      setBrands(results)
+    }
     setNextUrl(next);
     setTotalBrands(count);
     setLoadingState(false);

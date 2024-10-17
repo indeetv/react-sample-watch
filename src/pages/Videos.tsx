@@ -70,7 +70,7 @@ export default function Videos() {
       footerText={nextVidoesUrl && "Load More Videos..."}
       onShowMoreClicked={handleShowMoreClicked}
     >
-      Select a video to play
+      Selected Project : 2012
     </AppLayout>
   );
 }

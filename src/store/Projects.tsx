@@ -66,7 +66,6 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
   ): Promise<void> => {
     const jwtToken = getCookie("token");
     const endpoint = nextUrl ?? `content/projects/${prjKey}/videos`;
-    const isFullUrl = nextUrl ? true : false;
 
     setLoadingState(true);
     const { results,next } = await api.get<VideosResponse>(endpoint, {
@@ -78,6 +77,7 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
       );
     } else setSelectedPrjVideos(results);
     setNextVidoesUrl(next)
+    debugger
     setLoadingState(false);
   };
 
