@@ -1,16 +1,17 @@
-import React, {useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { endpoints } from "../utils/metaConfig";
-import { getCookie } from "../utils/auth";
+import { metaEndPoints } from "../utils/metaConfig";
+import { getToken } from "../utils/auth";
 import { PlaybackData } from "../types/playback";
 import { myFetch } from "../lib/myFetch";
-import { GlobalContext } from "../store/global";
+import { ProductContext } from "../store/Product";
 
 export default function ViewingRoom() {
   const api = new myFetch();
-  const {setLoadingState} = useContext(GlobalContext)
   const [searchParams] = useSearchParams();
   const [screenerKey, setScreenerKey] = useState<string>();
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const { host, endpoints } = useContext(ProductContext);
   const [dataToEnablePlayback, setDataToEnablePlayback] = useState({
     apiUrl: "",
     embeddablePlayerInitializationUrl: "",
@@ -56,42 +57,58 @@ export default function ViewingRoom() {
   };
 
   const fetchPlaybackData = async () => {
-    const token = getCookie("token");
-    if (!dataToEnablePlayback.apiUrl) {
-      throw new Error("Screener key is missing or invalid");
+    try {
+      const token = getToken("token");
+      if (!dataToEnablePlayback.apiUrl) {
+        throw new Error("Screener key is missing or invalid");
+      }
+      const response = await api.post(
+        dataToEnablePlayback.apiUrl,
+        { stream_protocol: "dash" },
+        {
+          Authorization: `JWT ${token}`,
+        },
+        false
+      );
+      const playbackData = response as PlaybackData;
+      await getEmbeddablePlayer(playbackData);
+    } catch (error) {
+      const match = error.message.match(/"detail":"(.*?)"/);
+      const statusMessage = match ? match[1] : "Playback failed";
+      setErrorMsg(statusMessage);
+      return;
     }
-    const response = await api.post(
-      dataToEnablePlayback.apiUrl,
-      { stream_protocol: "dash" },
-      {
-        Authorization: `JWT ${token}`,
-      },
-      false
-    );
-    const playbackData = response as PlaybackData;
-    await getEmbeddablePlayer(playbackData);
   };
 
   const init = async () => {
     if (screenerKey) {
-      dataToEnablePlayback.apiUrl = `stream/${screenerKey}/playback`;
+      dataToEnablePlayback.apiUrl = `${endpoints[
+        "watch.stream.session.playback"
+      ].replace("<str:screener_key>", screenerKey)}`;
       dataToEnablePlayback.embeddablePlayerInitializationUrl =
-        endpoints["watch.stream.player_function.retrieve"];
+        `${host}${metaEndPoints["watch.stream.player_function.retrieve"]}`;
       dataToEnablePlayback.embeddablePlayerTemplateURL =
-        endpoints["watch.stream.player_component.retrieve"];
+        `${host}${metaEndPoints["watch.stream.player_component.retrieve"]}`;
       await loadScript(dataToEnablePlayback.embeddablePlayerInitializationUrl);
       await fetchPlaybackData();
     }
   };
 
   useEffect(() => {
-    const screenerKey = searchParams.get("screenerKey") as string;
-    setScreenerKey(screenerKey);
-    init();
+    if(host){
+      const screenerKey = searchParams.get("screenerKey") as string;
+      setScreenerKey(screenerKey);
+      init();
+    }
   });
   return (
-    <div id="main-container" className="h-[100vh]">
-      <iframe id="video_player" className="w-full h-full"></iframe>
-    </div>
+    <>
+      {errorMsg && (
+        <div className="h-screen grid place-items-center">{errorMsg}</div>
+      )}
+      <div id="main-container" className="h-[100vh]">
+        <iframe id="video_player" className="w-full h-full"></iframe>
+      </div>
+    </>
   );
 }

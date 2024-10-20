@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext } from "react";
 import { myFetch } from "../lib/myFetch";
-import { getCookie } from "../utils/auth";
+import { getToken } from "../utils/auth";
 import {
   ProjectsContextType,
   ProjectsProviderProps,
@@ -11,12 +11,13 @@ import {
   VideoDetails,
   ApiResponse,
 } from "../types/projects";
-import { GlobalContext } from "./global";
+import { GlobalContext } from "./Global";
+import { ProductContext } from "./Product";
 
 const ProjectsContext = createContext<ProjectsContextType>({
   projects: null,
   nextPrjUrl: null,
-  nextVidoesUrl:null,
+  nextVidoesUrl: null,
   selectedPrjVideos: null,
   fetchProjects: async () => {},
   fetchProjectsVideos: async () => {},
@@ -26,8 +27,10 @@ const ProjectsContext = createContext<ProjectsContextType>({
 
 const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
   const api = new myFetch();
-  const { setLoadingState } = useContext(GlobalContext);
+  const { setLoadingState, setPaginatorLoadingState } =
+    useContext(GlobalContext);
   const [projects, setProjects] = useState<Project[] | null>(null);
+  const { endpoints } = useContext(ProductContext);
   const [nextPrjUrl, setNextPrjUrl] = useState<string | null>(null);
   const [nextVidoesUrl, setNextVidoesUrl] = useState<string | null>(null);
   const [selectedPrjVideos, setSelectedPrjVideos] = useState<Video[] | null>(
@@ -38,11 +41,13 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
     brandKey: string,
     nextUrl?: string
   ): Promise<void> => {
-    const jwtToken = getCookie("token");
-    const endpoint = nextUrl ?? `content/projects?brand=${brandKey}`;
+    const jwtToken = getToken("token");
+    const endpoint =
+      nextUrl ?? `${endpoints["watch.content.project.list"]}?brand=${brandKey}`;
     const isFullUrl = nextUrl ? true : false;
-
+    if (nextUrl) setPaginatorLoadingState(true);
     setLoadingState(true);
+
     const { results, count, next }: ProjectsResponse = await api.get(
       endpoint,
       {
@@ -58,31 +63,44 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
     } else setProjects(results);
     setNextPrjUrl(next);
     setLoadingState(false);
+    setPaginatorLoadingState(false);
   };
 
   const fetchProjectsVideos = async (
     prjKey: string,
     nextUrl?: string
   ): Promise<void> => {
-    const jwtToken = getCookie("token");
-    const endpoint = nextUrl ?? `content/projects/${prjKey}/videos`;
-
+    const jwtToken = getToken("token");
+    const endpoint =
+      nextUrl ??
+      `${endpoints["watch.content.videos.list"].replace(
+        "<str:project_key>",
+        prjKey
+      )}`;
+    if (nextUrl) setPaginatorLoadingState(true);
+    const isFullUrl = nextUrl ? true : false;
     setLoadingState(true);
-    const { results,next } = await api.get<VideosResponse>(endpoint, {
-      Authorization: `JWT ${jwtToken}`,
-    } as HeadersInit);
+
+    const { results, next } = await api.get<VideosResponse>(
+      endpoint,
+      {
+        Authorization: `JWT ${jwtToken}`,
+      } as HeadersInit,
+      isFullUrl
+    );
+
     if (nextUrl) {
       setSelectedPrjVideos((prevVideos) =>
         prevVideos ? [...prevVideos, ...results] : results
       );
     } else setSelectedPrjVideos(results);
-    setNextVidoesUrl(next)
-    debugger
+    setNextVidoesUrl(next);
+    setPaginatorLoadingState(false);
     setLoadingState(false);
   };
 
   const playback = async (screenerKey: string): Promise<void> => {
-    const jwtToken = getCookie("token");
+    const jwtToken = getToken("token");
     await api.post(
       `stream/${screenerKey}/playback`,
       {
@@ -99,9 +117,11 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
     videoKey: string
   ): Promise<string> => {
     setLoadingState(true);
-    const jwtToken = getCookie("token");
+    const jwtToken = getToken("token");
     const response = await api.get<ApiResponse<VideoDetails>>(
-      `content/projects/${prjKey}/videos/${videoKey}`,
+      endpoints["watch.content.video.retrieve"]
+        .replace("<str:project_key>", prjKey)
+        .replace("<str:video_key>", videoKey),
       {
         Authorization: `JWT ${jwtToken}`,
       }
@@ -120,6 +140,7 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
         selectedPrjVideos,
         playback,
         nextPrjUrl,
+        nextVidoesUrl,
       }}
     >
       {children}

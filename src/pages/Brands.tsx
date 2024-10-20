@@ -3,14 +3,19 @@ import { BrandsContext } from "../store/Brands";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 import { Brand } from "../types/brands";
+import { ProductContext } from "../store/Product";
 
 export default function Brands() {
   const navigate = useNavigate();
   const { getBrands, brands, totalBrands, nextUrl } = useContext(BrandsContext);
+  const { endpoints } = useContext(ProductContext);
+
   const handleButtonClick = () => {};
   useEffect(() => {
-    getBrands();
-  }, []);
+    if(endpoints){
+      getBrands();
+    }
+  }, [endpoints]);
 
   useEffect(() => {
     redirectToProjectPage();
@@ -28,7 +33,7 @@ export default function Brands() {
   };
 
   const handleShowMoreClicked = () => getBrands(nextUrl as string);
-  
+
   return (
     <>
       <AppLayout

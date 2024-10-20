@@ -7,6 +7,8 @@ export interface ProductContextType {
   signupAllowed: boolean;
   getMetaConfig: () => Promise<void>;
   getProductConfig: () => Promise<void>;
+  endpoints:Endpoints,
+  host:string
 }
 
 export interface ProductProviderProps {
@@ -27,4 +29,19 @@ export interface ProductConfigType {
   key: string;
   singup_allowed: boolean;
   assets: Assets;
+}
+
+export interface MetaConfigResponce {
+  endpoints: Endpoints;
+  host: Host;
+  status_code: string;
+  error?:Object
+}
+
+export interface Endpoints {
+  [key: string]: string; 
+}
+
+interface Host {
+  name: string;
 }

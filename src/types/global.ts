@@ -26,8 +26,10 @@ export interface AppLayoutProps {
 }
 
 export interface GlobalContextType{
+  setPaginatorLoadingState:(loading:boolean) =>void;
   setLoadingState:(isLoading:boolean) => void;
   isLoading:boolean;
+  paginatorLoading:boolean;
 }
 
 export interface GlobalProviderProps{

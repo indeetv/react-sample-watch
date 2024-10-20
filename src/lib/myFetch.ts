@@ -1,4 +1,5 @@
 import { getClientID } from "../utils/api";
+import { removeToken } from "../utils/auth";
 
 export class myFetch {
   private baseUrl: string;
@@ -71,7 +72,9 @@ export class myFetch {
     const responseBody = await response.text();
     const contentType = response.headers.get("Content-Type");
     const isHtml = contentType && contentType.includes("text/html");
-    if (response.status === 401) {
+    if (response.status === 401 && window.location.pathname !== "/login") {
+      removeToken("token");
+      removeToken("rfToken");
       window.location.href = "/login";
       throw new Error("Unauthorized access - redirecting to login.");
     }

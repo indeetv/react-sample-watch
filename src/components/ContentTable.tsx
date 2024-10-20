@@ -33,12 +33,6 @@ const ContentTable = <T extends Project>({
     );
   };
 
-  // const test = (e) =>{
-  //   if(e.target.closest('td')) console.log(e.target.id)
-  //     debugger
-  //     handleNameClick(e.target.id,e.target.videoKey)
-  // }
-
   return (
     <div className="overflow-x-auto">
       <table className="table-auto w-full text-sm text-center rtl:text-right text-gray-500 dark:text-gray-400">
@@ -56,14 +50,19 @@ const ContentTable = <T extends Project>({
             <tr
               key={index}
               className={`odd:bg-white even:bg-gray-50 h-16 border-b cursor-pointer hover:bg-gray-200`}
-              // onClick={test}
               onClick={() => handleNameClick(item.key, item)}
             >
               {headers?.map((header) => (
                 <td
                   key={header}
                   id={item.key}
-                  title={header === "poster" || header === "logo" || header === "header" ? null : item[header]}
+                  title={
+                    header === "poster" ||
+                    header === "logo" ||
+                    header === "header"
+                      ? null
+                      : item[header]
+                  }
                   className="p-2 text-gray-900 font-medium text-center truncate max-w-80"
                 >
                   {header === "poster" ||
@@ -83,12 +82,21 @@ const ContentTable = <T extends Project>({
                     )
                   ) : header === "name" ? (
                     <button
-                      // onClick={() => handleNameClick(item.key, item)}
                       title={item[header]}
                       className="text-blue-500 underline truncate max-w-80"
                     >
                       {item[header]}
                     </button>
+                  ) : header === "expired" ? (
+                    item[header] ? (
+                      <span className="bg-red-200 text-red-950 text-xs font-medium me-2 px-2.5 py-0.5 rounded">
+                        Expired
+                      </span>
+                    ) : (
+                      <span className="bg-green-200 text-green-950 text-xs font-medium me-2 px-2.5 py-0.5 rounded">
+                        Active
+                      </span>
+                    )
                   ) : (
                     item[header] ?? "Not Present"
                   )}

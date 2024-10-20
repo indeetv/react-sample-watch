@@ -16,6 +16,8 @@ export interface LoginContextType {
   checkForLoginAndUpdate: () => void;
   login: (authType: string, credentials: LoginFormData) => Promise<void>;
   logout: () => void;
+  authLoading:boolean;
+  errorMsg:string;
 }
 
 export interface LoginProviderProps {
@@ -26,6 +28,11 @@ export interface LoginApiResponce {
   status_code: string;
   token: string;
   refresh_token: string;
+  error:error;
+}
+
+interface error{
+  status_message:string;
 }
 
 export interface LoginRequest {

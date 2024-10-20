@@ -1,16 +1,26 @@
 import React, { useState, useCallback, useContext } from "react";
 import { ProductContext } from "../../store/Product";
 import { LoginLayoutProps, LoginFormData } from "../../types/auth";
-import { GlobalContext } from "../../store/global";
-import LoadingSpinner from "../Loader"; 
+import { GlobalContext } from "../../store/Global";
+import LoadingSpinner from "../Reusable/Loader";
+import { LoginContext } from "../../store/Auth";
+import ButtonLoader from "../Reusable/ButtonLoading";
 
 const LoginLayout: React.FC<LoginLayoutProps> = ({ authType, onSubmit }) => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [loginFormData, setLoginFormData] = useState<LoginFormData>({
     username: "",
     authKey: "",
   });
+
   const { isLoading } = useContext(GlobalContext);
   const { logoImg } = useContext(ProductContext);
+
+  const togglePasswordVisibility = (): void => {
+    setIsPasswordVisible((prev) => !prev);
+  };
+
+  const { errorMsg, authLoading } = useContext(LoginContext);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +86,11 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({ authType, onSubmit }) => {
                       value={loginFormData.username}
                       onChange={handleChange}
                       autoComplete="email"
-                      className="px-2.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className={`px-2.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ${
+                        errorMsg
+                          ? "ring-red-600 focus:ring-red-700"
+                          : "ring-gray-300 focus:ring-indigo-600"
+                      } placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                     />
                   </div>
                 </div>
@@ -94,22 +108,30 @@ const LoginLayout: React.FC<LoginLayoutProps> = ({ authType, onSubmit }) => {
                   <input
                     id="authKey"
                     name="authKey"
-                    type="password"
+                    type={isPasswordVisible ? "text" : "password"}
                     value={loginFormData.authKey}
                     onChange={handleChange}
                     required
                     autoComplete="current-password"
-                    className="px-2.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    onFocus={togglePasswordVisibility}
+                    onBlur={togglePasswordVisibility}
+                    className={`px-2.5 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ${
+                      errorMsg
+                        ? "ring-red-600 focus:ring-red-700"
+                        : "ring-gray-300 focus:ring-indigo-600"
+                    } placeholder:text-gray-400 sm:text-sm sm:leading-6`}
                   />
                 </div>
               </div>
-
+              <p className="text-red-600 text-center w-full text-sm">
+                {errorMsg}
+              </p>
               <div>
                 <button
                   type="submit"
                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  Sign In
+                  {authLoading ? <ButtonLoader /> : <span>Sign In</span>}
                 </button>
               </div>
             </form>

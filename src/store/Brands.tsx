@@ -5,10 +5,11 @@ import {
   BrandsProviderProps,
   BrandsResponse,
 } from "../types/brands";
-import { getCookie } from "../utils/auth";
+import { getToken } from "../utils/auth";
 
 import { myFetch } from "../lib/myFetch";
-import { GlobalContext } from "./global";
+import { GlobalContext } from "./Global";
+import { ProductContext } from "./Product";
 
 const BrandsContext = createContext<BrandsContextType>({
   getBrands: () => {},
@@ -19,17 +20,20 @@ const BrandsContext = createContext<BrandsContextType>({
 
 const BrandsProvider: React.FC<BrandsProviderProps> = ({ children }) => {
   const api = new myFetch();
+  const {endpoints} = useContext(ProductContext)
   const [brands, setBrands] = useState<Brand[] | null>(null);
   const [totalBrands, setTotalBrands] = useState<number>(0);
   const [nextUrl, setNextUrl] = useState<string | null>(null);
-  const { setLoadingState } = useContext(GlobalContext);
+  const { setLoadingState, setPaginatorLoadingState } =
+    useContext(GlobalContext);
 
   const getBrands = async (url?: string): Promise<void> => {
-    const jwtToken = getCookie("token");
-    const endpoint = url ?? "content/brands";
+    const jwtToken = getToken("token");
+    const endpoint = url ?? endpoints["watch.content.brand.list"];
     const isFullUrl = url ? true : false;
-    
+    if (isFullUrl) setPaginatorLoadingState(true);
     setLoadingState(true);
+
     const { results, count, next } = await api.get<BrandsResponse>(
       endpoint,
       {
@@ -43,10 +47,12 @@ const BrandsProvider: React.FC<BrandsProviderProps> = ({ children }) => {
         prevBrands ? [...prevBrands, ...results] : results
       );
     } else {
-      setBrands(results)
+      setBrands(results);
     }
+
     setNextUrl(next);
     setTotalBrands(count);
+    setPaginatorLoadingState(false);
     setLoadingState(false);
   };
 

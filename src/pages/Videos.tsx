@@ -4,9 +4,12 @@ import { ProjectsContext } from "../store/Projects";
 import AppLayout from "../components/AppLayout";
 import { VideoItem } from "../types/projects";
 import { useNavigate } from "react-router-dom";
+import { ProductContext } from "../store/Product";
 
 export default function Videos() {
   const [filteredData, setFilteredData] = useState<VideoItem[]>([]);
+  const {projects} = useContext(ProjectsContext)
+  const {host} = useContext(ProductContext)
   const [searchParams] = useSearchParams();
   const {
     fetchProjectsVideos,
@@ -16,11 +19,27 @@ export default function Videos() {
   } = useContext(ProjectsContext);
   const prjKey = searchParams.get("project") as string;
   const navigate = useNavigate();
+  const [selectedPrjName, setSelectedPrjName] = useState<string>(() => {
+    return sessionStorage.getItem('selectedProject') || "";
+  });
 
   useEffect(() => {
-    fetchProjectsVideos(prjKey);
-  }, []);
+    if(host){
+      fetchProjectsVideos(prjKey);
+      getSelectedPrjName()
+    }
+  }, [host]);
 
+ const  getSelectedPrjName = () =>{
+    if(projects){
+      for(const prj of projects){
+        if(prj.key ===prjKey )  {
+          sessionStorage.setItem("selectedProject",prj.name)
+          setSelectedPrjName(prj.name)
+        }
+      }
+    }
+  }
   useEffect(() => {
     if (selectedPrjVideos) {
       const filter = selectedPrjVideos.map((item: VideoItem) => ({
@@ -30,6 +49,7 @@ export default function Videos() {
         views_consumed: item.screening_details.views_consumed,
         start_date: convertEpochToDate(item.screening_details.start_date),
         expiry_date: convertEpochToDate(item.screening_details.expiry_date),
+        expired: item.screening_details.expired,
         key: item.screening_details.screener_key,
         video_key: item.key,
       }));
@@ -70,7 +90,7 @@ export default function Videos() {
       footerText={nextVidoesUrl && "Load More Videos..."}
       onShowMoreClicked={handleShowMoreClicked}
     >
-      Selected Project : 2012
+      Selected Project : {selectedPrjName}
     </AppLayout>
   );
 }

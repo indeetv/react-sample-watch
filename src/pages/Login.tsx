@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useLayoutEffect } from "react";
 import LoginLayout from "../components/Login/Login";
-import { LoginContext } from "../store/auth";
+import { LoginContext } from "../store/Auth";
 import { ProductContext } from "../store/Product";
 import { LoginFormData } from "../types/auth";
 import { useNavigate } from "react-router-dom";

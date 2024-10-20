@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useLayoutEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -9,17 +9,16 @@ import Login from "../pages/Login";
 import Brands from "../pages/Brands";
 import Videos from "../pages/Videos";
 import ViewingRoom from "../pages/viewing-room";
-import { LoginContext } from "../store/auth";
+import { LoginContext } from "../store/Auth";
 import { ProductContext } from "../store/Product";
 import Projects from "../pages/Projects";
 
 const AppRouter: React.FC = () => {
-  const { getMetaConfig,getProductConfig } = useContext(ProductContext);
+  const { getMetaConfig, getProductConfig } = useContext(ProductContext);
   const { checkForLoginAndUpdate } = useContext(LoginContext);
 
   useEffect(() => {
     checkForLoginAndUpdate();
-    getProductConfig();
     getMetaConfig();
   }, []);
 
@@ -32,7 +31,6 @@ const AppRouter: React.FC = () => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/videos" element={<Videos />} />
         <Route path="/viewing_room" element={<ViewingRoom />} />
-        
       </Routes>
     </Router>
   );
