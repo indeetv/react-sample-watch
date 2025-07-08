@@ -16,7 +16,7 @@ export interface ProjectsContextType {
   selectedPrjVideos: Video[] | null;
   fetchProjects: (brandKey: string, nextUrl?: string) => Promise<void>;
   fetchProjectsVideos: (prjKey: string,nextVideosUrl?:string) => Promise<void>;
-  getVideoDetails: (prjKey: string, videoKey: string) => Promise<string>;
+  getVideoDetails: (prjKey: string, videoKey: string) => Promise<VideoDetails>;
   playback: (screenerKey: string) => Promise<void>;
   nextPrjUrl: string | null;
   nextVidoesUrl: string | null;

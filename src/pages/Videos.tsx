@@ -74,7 +74,8 @@ export default function Videos() {
     prjKey: string,
     videoKey: string
   ) => {
-    const scrKey = await getVideoDetails(prjKey, videoKey);
+    const data = await getVideoDetails(prjKey, videoKey);
+    const scrKey = data.screening_details.screener_key;
     navigate(`/viewing_room?screenerKey=${encodeURIComponent(scrKey)}`);
   };
 
