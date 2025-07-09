@@ -80,18 +80,21 @@ export interface VideoItem {
 }
 
 export interface VideoDetails {
-  key: string;
-  name: string;
-  poster: string;
-  duration_in_sec: number;
-  description: string;
-  screening_details: {
-    screener_key: string;
-    max_views: number;
-    views_consumed: number;
-    start_date: number;
-    expiry_date: number;
-  };
+  key: string
+  name: string
+  poster: string
+  duration_in_sec: number
+  cast_and_crew: any[]
+  description: string
+  subtitles: any[]
+  is_cmaf_enabled: boolean
+  season: any
+  episode: any
+  original_air_date: any
+  screening_details: ScreeningDetails
+  auth_details: AuthDetails
+  overlay_watermark_details: OverlayDetails
+  resume_playback: ResumeDetails
 }
 
 export interface ApiResponse<T> {
@@ -99,4 +102,24 @@ export interface ApiResponse<T> {
   status: string;
   message?: string;
   data: T;
+}
+
+export interface AuthDetails {
+  mode: string
+  ident: {
+    country_code: number
+    phone: number
+  }
+}
+
+export interface OverlayDetails {
+  text: string
+  opacity: number
+  position: string
+  interval_in_seconds: number
+  image_link: string
+}
+
+export interface ResumeDetails {
+  from_second?: number
 }
