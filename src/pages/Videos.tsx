@@ -35,6 +35,7 @@ export default function Videos() {
       for(const prj of projects){
         if(prj.key ===prjKey )  {
           sessionStorage.setItem("selectedProject",prj.name)
+          sessionStorage.setItem("selectedProjectId",prj.key);
           setSelectedPrjName(prj.name)
         }
       }
@@ -74,8 +75,9 @@ export default function Videos() {
     prjKey: string,
     videoKey: string
   ) => {
-    const scrKey = await getVideoDetails(prjKey, videoKey);
-    navigate(`/viewing_room?screenerKey=${encodeURIComponent(scrKey)}`);
+    const data = await getVideoDetails(prjKey, videoKey);
+    const scrKey = data.screening_details.screener_key;
+    navigate(`/viewing_room?screenerKey=${encodeURIComponent(scrKey)}&project=${encodeURIComponent(sessionStorage.getItem("selectedProjectId")!)}&video=${encodeURIComponent(videoKey)}`);
   };
 
   const handleShowMoreClicked = () =>

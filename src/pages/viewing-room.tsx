@@ -5,9 +5,11 @@ import { getToken } from "../utils/auth";
 import { PlaybackData } from "../types/playback";
 import { myFetch } from "../lib/myFetch";
 import { ProductContext } from "../store/Product";
+import { ProjectsContext } from "../store/Projects";
 
 export default function ViewingRoom() {
   const api = new myFetch();
+  const baseUrl = import.meta.env.VITE_BASE_URL || "";
   const [searchParams] = useSearchParams();
   const [screenerKey, setScreenerKey] = useState<string>();
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -17,6 +19,9 @@ export default function ViewingRoom() {
     embeddablePlayerInitializationUrl: "",
     embeddablePlayerTemplateURL: "",
   });
+  const {getVideoDetails} = useContext(ProjectsContext);
+  const projectKey = searchParams.get("project") as string;
+  const videoKey = searchParams.get("video") as string;
 
   const loadScript = (url: string): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
@@ -37,6 +42,9 @@ export default function ViewingRoom() {
       true
     );
     const embeddablePlayerHtml = response;
+
+    const currentSelectedVideo = await getVideoDetails(projectKey, videoKey);
+
     if (window?.initializeIndeePlayer) {
       window.initializeIndeePlayer(
         "video_player",
@@ -44,13 +52,22 @@ export default function ViewingRoom() {
           playbackSourcesData: {
             drm: playbackData.drm,
             manifest: playbackData.manifest,
+            defaultSubtitle: currentSelectedVideo?.subtitles[0]?.label || ''
           },
           playbackMode: "dash",
-          overlayWatermarkDetails: {},
-          engagementInterval: { ...playbackData.engagement },
+          overlayWatermarkDetails: currentSelectedVideo?.overlay_watermark_details,
+          savePlayerPreferences: true,
+          resumeDetails: {
+            from_second: currentSelectedVideo?.resume_playback?.from_second || 0,
+            duration_in_sec: currentSelectedVideo?.duration_in_sec
+          },
+          engagementData: {
+            push_interval: playbackData.engagement.push_interval,
+            endpointUrl: baseUrl+endpoints['watch.stream.view_engagement.record'] + '?'
+          }
         },
         embeddablePlayerHtml,
-        "video_key",
+        currentSelectedVideo?.key,
         { autoPlay: true }
       );
     }
@@ -100,7 +117,7 @@ export default function ViewingRoom() {
       setScreenerKey(screenerKey);
       init();
     }
-  });
+  },[host, screenerKey]);
   return (
     <>
       {errorMsg && (

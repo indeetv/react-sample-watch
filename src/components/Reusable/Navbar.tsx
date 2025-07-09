@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import logo from "/images/indee-logo/indeeLogo.webp"
 import { LoginContext } from "../../store/Auth";
 import { useNavigate } from "react-router-dom";
 import ButtonLoader from "./ButtonLoading";
@@ -18,7 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
             onClick={navigateToBrandsPage}
           >
             <img
-              src="https://indee.tv/wp-content/themes/indee/images/favicons/favicon_192x192.png"
+              src={logo}
               className="h-8"
               alt="indee logo"
             />
