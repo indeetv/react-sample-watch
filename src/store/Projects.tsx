@@ -21,7 +21,7 @@ const ProjectsContext = createContext<ProjectsContextType>({
   selectedPrjVideos: null,
   fetchProjects: async () => {},
   fetchProjectsVideos: async () => {},
-  getVideoDetails: (prjKey: string, videoKey: string) => Promise<string>,
+  getVideoDetails: (prjKey: string, videoKey: string) => Promise<VideoDetails>,
   playback: async () => {},
 });
 
@@ -115,10 +115,11 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
   const getVideoDetails = async (
     prjKey: string,
     videoKey: string
-  ): Promise<string> => {
+  ): Promise<VideoDetails> => {
     setLoadingState(true);
     const jwtToken = getToken("token");
-    const response = await api.get<ApiResponse<VideoDetails>>(
+    
+    const response = await api.get<VideoDetails>(
       endpoints["watch.content.video.retrieve"]
         .replace("<str:project_key>", prjKey)
         .replace("<str:video_key>", videoKey),
@@ -127,7 +128,8 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
       }
     );
     setLoadingState(false);
-    return response.screening_details.screener_key;
+
+    return response;
   };
 
   return (

@@ -28,9 +28,19 @@ const ContentTable = <T extends Project>({
       return;
     }
     onButtonClick(_key, undefined);
-    navigate(
-      `/${pageToRedirect}?${queryNameToAdd}=${encodeURIComponent(_key)}`
-    );
+
+    if(pageToRedirect === "viewing_room")
+    {
+      navigate(
+        `/${pageToRedirect}?${queryNameToAdd}=${encodeURIComponent(_key)}&project=${encodeURIComponent(sessionStorage.getItem("selectedProjectId")!)}&video=${encodeURIComponent(videoKey)}`
+      );
+    }
+    else
+    {
+      navigate(
+        `/${pageToRedirect}?${queryNameToAdd}=${encodeURIComponent(_key)}`
+      );
+    }
   };
 
   return (
