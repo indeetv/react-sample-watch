@@ -43,7 +43,7 @@ export default function ViewingRoom() {
     );
     const embeddablePlayerHtml = response;
 
-    const currentSelectedVideo = await getVideoDetails(projectKey ?? '', videoKey ?? '');
+    const currentSelectedVideo = await getVideoDetails(projectKey!, videoKey!);
 
     if (window?.initializeIndeePlayer) {
       window.initializeIndeePlayer(
@@ -115,7 +115,11 @@ export default function ViewingRoom() {
   useEffect(() => {
     if (host && projectKey && videoKey) {
       const sk = searchParams.get("screenerKey");
-      if (sk) setScreenerKey(sk);
+      if (!sk) {
+        setErrorMsg("Screener key is missing.");
+        return;
+      }
+      setScreenerKey(sk);
       init();
     }
   },[host, screenerKey]);
