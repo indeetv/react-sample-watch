@@ -47,7 +47,8 @@ const LoginProvider: React.FC<LoginProviderProps> = ({ children }) => {
       }
       setAuthLoading(false)
     } catch (error) {
-      const match = error.message.match(/"status_message":"(.*?)"/);
+      const msg = error instanceof Error ? error.message : String(error);
+      const match = msg.match(/"status_message":"(.*?)"/);
       const statusMessage = match ? match[1] : "Login Failed";
       setErrorMsg(statusMessage)
       setAuthLoading(false)
@@ -64,16 +65,21 @@ const LoginProvider: React.FC<LoginProviderProps> = ({ children }) => {
     const jwtToken = getToken("token");
     const rfToken = getToken("rfToken");
     setAuthLoading(true)
-    const { status_code } = await api.post<LogoutResponse,LogoutRequest>(`${endpoints["watch.auth.session.logout"]}`, {
-      token: jwtToken,
-      refresh_token:rfToken
-    });
-    if (status_code === okStatus) {
-      removeToken("token");
-      removeToken("rfToken")
+    try {
+      const { status_code } = await api.post<LogoutResponse,LogoutRequest>(`${endpoints["watch.auth.session.logout"]}`, {
+        token: jwtToken,
+        refresh_token:rfToken
+      });
+      if (status_code === okStatus) {
+        removeToken("token");
+        removeToken("rfToken")
+      }
+      window.location.reload()
+    } catch {
+      // error already logged by myFetch
+    } finally {
+      setAuthLoading(false)
     }
-    setAuthLoading(false)
-    window.location.reload()
   };
 
   return (

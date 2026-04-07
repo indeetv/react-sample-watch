@@ -34,26 +34,31 @@ const BrandsProvider: React.FC<BrandsProviderProps> = ({ children }) => {
     if (isFullUrl) setPaginatorLoadingState(true);
     setLoadingState(true);
 
-    const { results, count, next } = await api.get<BrandsResponse>(
-      endpoint,
-      {
-        Authorization: `JWT ${jwtToken}`,
-      },
-      isFullUrl
-    );
-
-    if (url) {
-      setBrands((prevBrands) =>
-        prevBrands ? [...prevBrands, ...results] : results
+    try {
+      const { results, count, next } = await api.get<BrandsResponse>(
+        endpoint,
+        {
+          Authorization: `JWT ${jwtToken}`,
+        },
+        isFullUrl
       );
-    } else {
-      setBrands(results);
-    }
 
-    setNextUrl(next);
-    setTotalBrands(count);
-    setPaginatorLoadingState(false);
-    setLoadingState(false);
+      if (url) {
+        setBrands((prevBrands) =>
+          prevBrands ? [...prevBrands, ...results] : results
+        );
+      } else {
+        setBrands(results);
+      }
+
+      setNextUrl(next);
+      setTotalBrands(count);
+    } catch {
+      // error already logged by myFetch
+    } finally {
+      setPaginatorLoadingState(false);
+      setLoadingState(false);
+    }
   };
 
   return (

@@ -62,7 +62,7 @@ export default function ViewingRoom() {
             duration_in_sec: currentSelectedVideo?.duration_in_sec
           },
           engagementData: {
-            push_interval: playbackData.engagement.push_interval,
+            push_interval: playbackData?.engagement?.push_interval,
             endpointUrl: baseUrl+endpoints['watch.stream.view_engagement.record'] + '?'
           }
         },
@@ -90,7 +90,8 @@ export default function ViewingRoom() {
       const playbackData = response as PlaybackData;
       await getEmbeddablePlayer(playbackData);
     } catch (error) {
-      const match = error.message.match(/"detail":"(.*?)"/);
+      const msg = error instanceof Error ? error.message : String(error);
+      const match = msg.match(/"detail":"(.*?)"/);
       const statusMessage = match ? match[1] : "Playback failed";
       setErrorMsg(statusMessage);
       return;
@@ -99,9 +100,9 @@ export default function ViewingRoom() {
 
   const init = async () => {
     if (screenerKey) {
-      dataToEnablePlayback.apiUrl = `${endpoints[
+      dataToEnablePlayback.apiUrl = endpoints[
         "watch.stream.session.playback"
-      ].replace("<str:screener_key>", screenerKey)}`;
+      ]?.replace("<str:screener_key>", screenerKey) ?? "";
       dataToEnablePlayback.embeddablePlayerInitializationUrl =
         `${host}${metaEndPoints["watch.stream.player_function.retrieve"]}`;
       dataToEnablePlayback.embeddablePlayerTemplateURL =
