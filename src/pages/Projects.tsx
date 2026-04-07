@@ -13,10 +13,10 @@ export default function Projects() {
   });
   const { brands } = useContext(BrandsContext);
   const [searchParams] = useSearchParams();
-  const brand = searchParams.get("brand") as string;
+  const brand = searchParams.get("brand");
 
   useEffect(() => {
-    if(host){
+    if (host && brand) {
       fetchProjects(brand);
       displaySelectedBrand();
     }
@@ -33,7 +33,11 @@ export default function Projects() {
     }
   };
 
-  const handleShowMoreClicked = () => fetchProjects(brand, nextPrjUrl as string);
+  if (!brand) return <div className="h-screen grid place-items-center">Missing brand parameter.</div>;
+
+  const handleShowMoreClicked = () => {
+    if (nextPrjUrl) fetchProjects(brand, nextPrjUrl);
+  };
 
   return (
     <AppLayout

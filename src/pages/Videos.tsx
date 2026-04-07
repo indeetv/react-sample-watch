@@ -17,14 +17,14 @@ export default function Videos() {
     getVideoDetails,
     nextVidoesUrl,
   } = useContext(ProjectsContext);
-  const prjKey = searchParams.get("project") as string;
+  const prjKey = searchParams.get("project");
   const navigate = useNavigate();
   const [selectedPrjName, setSelectedPrjName] = useState<string>(() => {
     return sessionStorage.getItem('selectedProject') || "";
   });
 
   useEffect(() => {
-    if(host){
+    if (host && prjKey) {
       fetchProjectsVideos(prjKey);
       getSelectedPrjName()
     }
@@ -61,6 +61,8 @@ export default function Videos() {
   const convertEpochToDate = (epoch: number): string =>
     new Date(epoch * 1000).toLocaleString();
 
+  if (!prjKey) return <div className="h-screen grid place-items-center">Missing project parameter.</div>;
+
   const handleButtonClick = (key: string | null, videoKey?: string) => {
     if (!key && videoKey) {
       /**
@@ -81,8 +83,9 @@ export default function Videos() {
     navigate(`/viewing_room?screenerKey=${encodeURIComponent(scrKey)}&project=${encodeURIComponent(prjKey)}&video=${encodeURIComponent(videoKey)}`);
   };
 
-  const handleShowMoreClicked = () =>
-    fetchProjectsVideos(prjKey, nextVidoesUrl as string);
+  const handleShowMoreClicked = () => {
+    if (nextVidoesUrl) fetchProjectsVideos(prjKey, nextVidoesUrl);
+  };
 
   return (
     <AppLayout

@@ -33,7 +33,7 @@ export default function Brands() {
     }
   };
 
-  const handleShowMoreClicked = () => getBrands(nextUrl as string);
+  const handleShowMoreClicked = () => { if (nextUrl) getBrands(nextUrl); };
 
   return (
     <>

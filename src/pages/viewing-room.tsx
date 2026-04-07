@@ -20,8 +20,8 @@ export default function ViewingRoom() {
     embeddablePlayerTemplateURL: "",
   });
   const {getVideoDetails} = useContext(ProjectsContext);
-  const projectKey = searchParams.get("project") as string;
-  const videoKey = searchParams.get("video") as string;
+  const projectKey = searchParams.get("project");
+  const videoKey = searchParams.get("video");
 
   const loadScript = (url: string): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
@@ -43,7 +43,7 @@ export default function ViewingRoom() {
     );
     const embeddablePlayerHtml = response;
 
-    const currentSelectedVideo = await getVideoDetails(projectKey, videoKey);
+    const currentSelectedVideo = await getVideoDetails(projectKey ?? '', videoKey ?? '');
 
     if (window?.initializeIndeePlayer) {
       window.initializeIndeePlayer(
@@ -113,12 +113,14 @@ export default function ViewingRoom() {
   };
 
   useEffect(() => {
-    if(host){
-      const screenerKey = searchParams.get("screenerKey") as string;
-      setScreenerKey(screenerKey);
+    if (host && projectKey && videoKey) {
+      const sk = searchParams.get("screenerKey");
+      if (sk) setScreenerKey(sk);
       init();
     }
   },[host, screenerKey]);
+  if (!projectKey || !videoKey) return <div className="h-screen grid place-items-center">Missing required parameters.</div>;
+
   return (
     <>
       {errorMsg && (
