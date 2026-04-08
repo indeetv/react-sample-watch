@@ -33,8 +33,8 @@ const LoginProvider: React.FC<LoginProviderProps> = ({ children }) => {
     authType: string,
     credentials: LoginFormData
   ): Promise<void> => {
+    setAuthLoading(true)
     try {
-      setAuthLoading(true)
       const { status_code: _statusCode, token,refresh_token:rfToken } = await api.post<LoginApiResponce,LoginRequest>(`${endpoints["watch.auth.session.login"]}`, {
         type: authType,
         credentials: credentials,
@@ -45,12 +45,12 @@ const LoginProvider: React.FC<LoginProviderProps> = ({ children }) => {
         setToken("rfToken",rfToken)
         setUserLoggedIn(true);
       }
-      setAuthLoading(false)
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       const match = msg.match(/"status_message":"(.*?)"/);
       const statusMessage = match ? match[1] : "Login Failed";
       setErrorMsg(statusMessage)
+    } finally {
       setAuthLoading(false)
     }
   };

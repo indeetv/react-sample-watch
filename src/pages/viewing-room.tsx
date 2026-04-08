@@ -52,7 +52,7 @@ export default function ViewingRoom() {
           playbackSourcesData: {
             drm: playbackData.drm,
             manifest: playbackData.manifest,
-            defaultSubtitle: currentSelectedVideo?.subtitles[0]?.label || ''
+            defaultSubtitle: currentSelectedVideo?.subtitles?.[0]?.label || ''
           },
           playbackMode: "dash",
           overlayWatermarkDetails: currentSelectedVideo?.overlay_watermark_details,
