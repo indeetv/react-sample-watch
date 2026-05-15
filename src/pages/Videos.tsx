@@ -17,14 +17,14 @@ export default function Videos() {
     getVideoDetails,
     nextVidoesUrl,
   } = useContext(ProjectsContext);
-  const prjKey = searchParams.get("project") as string;
+  const prjKey = searchParams.get("project");
   const navigate = useNavigate();
   const [selectedPrjName, setSelectedPrjName] = useState<string>(() => {
     return sessionStorage.getItem('selectedProject') || "";
   });
 
   useEffect(() => {
-    if(host){
+    if (host && prjKey) {
       fetchProjectsVideos(prjKey);
       getSelectedPrjName()
     }
@@ -46,12 +46,12 @@ export default function Videos() {
       const filter = selectedPrjVideos.map((item: VideoItem) => ({
         name: item.name,
         poster: item.poster,
-        max_views: item.screening_details.max_views,
-        views_consumed: item.screening_details.views_consumed,
-        start_date: convertEpochToDate(item.screening_details.start_date),
-        expiry_date: convertEpochToDate(item.screening_details.expiry_date),
-        expired: item.screening_details.expired,
-        key: item.screening_details.screener_key,
+        max_views: item.screening_details?.max_views ?? 0,
+        views_consumed: item.screening_details?.views_consumed ?? 0,
+        start_date: convertEpochToDate(item.screening_details?.start_date ?? 0),
+        expiry_date: convertEpochToDate(item.screening_details?.expiry_date ?? 0),
+        expired: item.screening_details?.expired ?? false,
+        key: item.screening_details?.screener_key ?? null,
         video_key: item.key,
       }));
       setFilteredData(filter);
@@ -60,6 +60,8 @@ export default function Videos() {
 
   const convertEpochToDate = (epoch: number): string =>
     new Date(epoch * 1000).toLocaleString();
+
+  if (!prjKey) return <div className="h-screen grid place-items-center">Missing project parameter.</div>;
 
   const handleButtonClick = (key: string | null, videoKey?: string) => {
     if (!key && videoKey) {
@@ -76,12 +78,14 @@ export default function Videos() {
     videoKey: string
   ) => {
     const data = await getVideoDetails(prjKey, videoKey);
-    const scrKey = data.screening_details.screener_key;
-    navigate(`/viewing_room?screenerKey=${encodeURIComponent(scrKey)}&project=${encodeURIComponent(sessionStorage.getItem("selectedProjectId")!)}&video=${encodeURIComponent(videoKey)}`);
+    const scrKey = data?.screening_details?.screener_key;
+    if (!scrKey) return;
+    navigate(`/viewing_room?screenerKey=${encodeURIComponent(scrKey)}&project=${encodeURIComponent(prjKey)}&video=${encodeURIComponent(videoKey)}`);
   };
 
-  const handleShowMoreClicked = () =>
-    fetchProjectsVideos(prjKey, nextVidoesUrl as string);
+  const handleShowMoreClicked = () => {
+    if (nextVidoesUrl) fetchProjectsVideos(prjKey, nextVidoesUrl);
+  };
 
   return (
     <AppLayout

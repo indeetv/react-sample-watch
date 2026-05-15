@@ -48,22 +48,27 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
     if (nextUrl) setPaginatorLoadingState(true);
     setLoadingState(true);
 
-    const { results, count, next }: ProjectsResponse = await api.get(
-      endpoint,
-      {
-        Authorization: `JWT ${jwtToken}`,
-      },
-      isFullUrl
-    );
-
-    if (nextUrl) {
-      setProjects((prevProjects) =>
-        prevProjects ? [...prevProjects, ...results] : results
+    try {
+      const { results, count, next }: ProjectsResponse = await api.get(
+        endpoint,
+        {
+          Authorization: `JWT ${jwtToken}`,
+        },
+        isFullUrl
       );
-    } else setProjects(results);
-    setNextPrjUrl(next);
-    setLoadingState(false);
-    setPaginatorLoadingState(false);
+
+      if (nextUrl) {
+        setProjects((prevProjects) =>
+          prevProjects ? [...prevProjects, ...results] : results
+        );
+      } else setProjects(results);
+      setNextPrjUrl(next);
+    } catch {
+      // error already logged by myFetch
+    } finally {
+      setLoadingState(false);
+      setPaginatorLoadingState(false);
+    }
   };
 
   const fetchProjectsVideos = async (
@@ -73,7 +78,7 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
     const jwtToken = getToken("token");
     const endpoint =
       nextUrl ??
-      `${endpoints["watch.content.videos.list"].replace(
+      `${endpoints["watch.content.videos.list"]?.replace(
         "<str:project_key>",
         prjKey
       )}`;
@@ -81,35 +86,44 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
     const isFullUrl = nextUrl ? true : false;
     setLoadingState(true);
 
-    const { results, next } = await api.get<VideosResponse>(
-      endpoint,
-      {
-        Authorization: `JWT ${jwtToken}`,
-      } as HeadersInit,
-      isFullUrl
-    );
-
-    if (nextUrl) {
-      setSelectedPrjVideos((prevVideos) =>
-        prevVideos ? [...prevVideos, ...results] : results
+    try {
+      const { results, next } = await api.get<VideosResponse>(
+        endpoint,
+        {
+          Authorization: `JWT ${jwtToken}`,
+        } as HeadersInit,
+        isFullUrl
       );
-    } else setSelectedPrjVideos(results);
-    setNextVidoesUrl(next);
-    setPaginatorLoadingState(false);
-    setLoadingState(false);
+
+      if (nextUrl) {
+        setSelectedPrjVideos((prevVideos) =>
+          prevVideos ? [...prevVideos, ...results] : results
+        );
+      } else setSelectedPrjVideos(results);
+      setNextVidoesUrl(next);
+    } catch {
+      // error already logged by myFetch
+    } finally {
+      setPaginatorLoadingState(false);
+      setLoadingState(false);
+    }
   };
 
   const playback = async (screenerKey: string): Promise<void> => {
     const jwtToken = getToken("token");
-    await api.post(
-      `stream/${screenerKey}/playback`,
-      {
-        stream_protocol: "dash",
-      },
-      {
-        Authorization: `JWT ${jwtToken}`,
-      }
-    );
+    try {
+      await api.post(
+        `stream/${screenerKey}/playback`,
+        {
+          stream_protocol: "dash",
+        },
+        {
+          Authorization: `JWT ${jwtToken}`,
+        }
+      );
+    } catch {
+      // error already logged by myFetch
+    }
   };
 
   const getVideoDetails = async (
@@ -118,18 +132,23 @@ const ProjectsProvider: React.FC<ProjectsProviderProps> = ({ children }) => {
   ): Promise<VideoDetails> => {
     setLoadingState(true);
     const jwtToken = getToken("token");
-    
-    const response = await api.get<VideoDetails>(
-      endpoints["watch.content.video.retrieve"]
-        .replace("<str:project_key>", prjKey)
-        .replace("<str:video_key>", videoKey),
-      {
-        Authorization: `JWT ${jwtToken}`,
-      }
-    );
-    setLoadingState(false);
 
-    return response;
+    try {
+      const response = await api.get<VideoDetails>(
+        endpoints["watch.content.video.retrieve"]
+          .replace("<str:project_key>", prjKey)
+          .replace("<str:video_key>", videoKey),
+        {
+          Authorization: `JWT ${jwtToken}`,
+        }
+      );
+      return response;
+    } catch {
+      // error already logged by myFetch
+      return {} as VideoDetails;
+    } finally {
+      setLoadingState(false);
+    }
   };
 
   return (

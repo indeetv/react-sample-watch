@@ -42,26 +42,36 @@ const ProductProvider: React.FC<ProductProviderProps> = ({ children }) => {
   //store methods
   const getMetaConfig = async (): Promise<void> => {
     setLoadingState(true);
-    const { endpoints, host, status_code }: MetaConfigResponce = await api.get(
-      "v2/watch/meta/endpoints?device=browser"
-    );
-    if (status_code === okStatus) {
-      setEndpoints(endpoints);
-      setHost(host.name);
+    try {
+      const { endpoints, host, status_code }: MetaConfigResponce = await api.get(
+        "v2/watch/meta/endpoints?device=browser"
+      );
+      if (status_code === okStatus) {
+        setEndpoints(endpoints);
+        setHost(host.name);
+      }
+    } catch {
+      // error already logged by myFetch
+    } finally {
+      setLoadingState(false);
     }
-    setLoadingState(false);
   };
 
   const getProductConfig = async (): Promise<void> => {
-      setLoadingState(true);
+    setLoadingState(true);
+    try {
       const { auth_type, singup_allowed, key, assets } = (await api.get(
         `${endpoints["watch.meta.product.retrieve"]}?device=browser`
       )) as ProductConfigType;
       setAuthType(auth_type);
       setKey(key);
       setSignupAllowed(singup_allowed);
-      setLogoImg(assets.logo_image.links[0]);
+      setLogoImg(assets?.logo_image?.links?.[0] ?? "");
+    } catch {
+      // error already logged by myFetch
+    } finally {
       setLoadingState(false);
+    }
   };
 
   return (

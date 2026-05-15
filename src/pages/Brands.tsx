@@ -27,12 +27,13 @@ export default function Brands() {
       brands &&
       (brands as Brand[])[0]?.keyword === "allprojects"
     ) {
-      const brandKey = (brands as Brand[])[0].key;
+      const brandKey = (brands as Brand[])[0]?.key;
+      if (!brandKey) return;
       navigate(`/projects?brand=${brandKey}`);
     }
   };
 
-  const handleShowMoreClicked = () => getBrands(nextUrl as string);
+  const handleShowMoreClicked = () => { if (nextUrl) getBrands(nextUrl); };
 
   return (
     <>

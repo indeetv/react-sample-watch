@@ -20,8 +20,8 @@ export default function ViewingRoom() {
     embeddablePlayerTemplateURL: "",
   });
   const {getVideoDetails} = useContext(ProjectsContext);
-  const projectKey = searchParams.get("project") as string;
-  const videoKey = searchParams.get("video") as string;
+  const projectKey = searchParams.get("project");
+  const videoKey = searchParams.get("video");
 
   const loadScript = (url: string): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
@@ -43,7 +43,7 @@ export default function ViewingRoom() {
     );
     const embeddablePlayerHtml = response;
 
-    const currentSelectedVideo = await getVideoDetails(projectKey, videoKey);
+    const currentSelectedVideo = await getVideoDetails(projectKey!, videoKey!);
 
     if (window?.initializeIndeePlayer) {
       window.initializeIndeePlayer(
@@ -52,7 +52,7 @@ export default function ViewingRoom() {
           playbackSourcesData: {
             drm: playbackData.drm,
             manifest: playbackData.manifest,
-            defaultSubtitle: currentSelectedVideo?.subtitles[0]?.label || ''
+            defaultSubtitle: currentSelectedVideo?.subtitles?.[0]?.label || ''
           },
           playbackMode: "dash",
           overlayWatermarkDetails: currentSelectedVideo?.overlay_watermark_details,
@@ -62,7 +62,7 @@ export default function ViewingRoom() {
             duration_in_sec: currentSelectedVideo?.duration_in_sec
           },
           engagementData: {
-            push_interval: playbackData.engagement.push_interval,
+            push_interval: playbackData?.engagement?.push_interval,
             endpointUrl: baseUrl+endpoints['watch.stream.view_engagement.record'] + '?'
           }
         },
@@ -90,7 +90,8 @@ export default function ViewingRoom() {
       const playbackData = response as PlaybackData;
       await getEmbeddablePlayer(playbackData);
     } catch (error) {
-      const match = error.message.match(/"detail":"(.*?)"/);
+      const msg = error instanceof Error ? error.message : String(error);
+      const match = msg.match(/"detail":"(.*?)"/);
       const statusMessage = match ? match[1] : "Playback failed";
       setErrorMsg(statusMessage);
       return;
@@ -99,9 +100,9 @@ export default function ViewingRoom() {
 
   const init = async () => {
     if (screenerKey) {
-      dataToEnablePlayback.apiUrl = `${endpoints[
+      dataToEnablePlayback.apiUrl = endpoints[
         "watch.stream.session.playback"
-      ].replace("<str:screener_key>", screenerKey)}`;
+      ]?.replace("<str:screener_key>", screenerKey) ?? "";
       dataToEnablePlayback.embeddablePlayerInitializationUrl =
         `${host}${metaEndPoints["watch.stream.player_function.retrieve"]}`;
       dataToEnablePlayback.embeddablePlayerTemplateURL =
@@ -112,12 +113,18 @@ export default function ViewingRoom() {
   };
 
   useEffect(() => {
-    if(host){
-      const screenerKey = searchParams.get("screenerKey") as string;
-      setScreenerKey(screenerKey);
+    if (host && projectKey && videoKey) {
+      const sk = searchParams.get("screenerKey");
+      if (!sk) {
+        setErrorMsg("Screener key is missing.");
+        return;
+      }
+      setScreenerKey(sk);
       init();
     }
   },[host, screenerKey]);
+  if (!projectKey || !videoKey) return <div className="h-screen grid place-items-center">Missing required parameters.</div>;
+
   return (
     <>
       {errorMsg && (

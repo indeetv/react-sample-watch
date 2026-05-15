@@ -31,8 +31,10 @@ const ContentTable = <T extends Project>({
 
     if(pageToRedirect === "viewing_room")
     {
+      const projectId = sessionStorage.getItem("selectedProjectId");
+      if (!projectId) return;
       navigate(
-        `/${pageToRedirect}?${queryNameToAdd}=${encodeURIComponent(_key)}&project=${encodeURIComponent(sessionStorage.getItem("selectedProjectId")!)}&video=${encodeURIComponent(videoKey)}`
+        `/${pageToRedirect}?${queryNameToAdd}=${encodeURIComponent(_key)}&project=${encodeURIComponent(projectId)}&video=${encodeURIComponent(videoKey)}`
       );
     }
     else
@@ -70,8 +72,8 @@ const ContentTable = <T extends Project>({
                     header === "poster" ||
                     header === "logo" ||
                     header === "header"
-                      ? null
-                      : item[header]
+                      ? undefined
+                      : item[header] != null ? String(item[header]) : undefined
                   }
                   className="p-2 text-gray-900 font-medium text-center truncate max-w-80"
                 >
@@ -92,7 +94,7 @@ const ContentTable = <T extends Project>({
                     )
                   ) : header === "name" ? (
                     <button
-                      title={item[header]}
+                      title={item[header] != null ? String(item[header]) : undefined}
                       className="text-blue-500 underline truncate max-w-80"
                     >
                       {item[header]}
